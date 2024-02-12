@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
-  Button,
   ChakraProvider,
+  Checkbox,
   Flex,
   Heading,
-  Text,
+  Stack,
   VStack,
 } from "@chakra-ui/react";
 
@@ -21,8 +21,8 @@ const MOCK_DATA: Array<TMockData> = [
   { initial: "yards", final: "metres (m)", multiplier: 0.91444 },
 ];
 const PARENT_HEADER: Array<TParentHeaderColumn> = [
-  { label: "Measurement", columnChildren: ["To convert", "into"] },
-  { label: "Multiplier", columnChildren: ["multiply by"] },
+  { label: "Measurement", columnChildren: ["initial", "final"] },
+  { label: "Multiplier", columnChildren: ["multiplier"], isNumeric: true },
 ];
 const COLUMNS: Array<TColumn<TMockData, keyof TMockData>> = [
   { value: "initial", label: "To convert" },
@@ -30,20 +30,56 @@ const COLUMNS: Array<TColumn<TMockData, keyof TMockData>> = [
   { value: "multiplier", label: "multiply by", isNumeric: true },
 ];
 function App() {
-  const [count, setCount] = useState(0);
+  const [shownColumns, setShownColumns] = useState({
+    initial: true,
+    final: true,
+    multiplier: true,
+  });
+
+  const columnFilters = useMemo(() => {
+    const columnFilters: Array<string> = [];
+    Object.entries(shownColumns).forEach((column) => {
+      if (column[1]) columnFilters.push(column[0]);
+    });
+    return columnFilters;
+  }, [shownColumns]);
+
+  const handleCheckboxChange = (column: "initial" | "final" | "multiplier") => {
+    const columnToUpdate = shownColumns[column];
+    const newShownColumns = { ...shownColumns };
+    newShownColumns[column] = !columnToUpdate;
+    setShownColumns(newShownColumns);
+  };
 
   return (
     <ChakraProvider>
       <Flex justifyContent="center">
         <VStack>
           <Heading margin="5">Chakra UI Table</Heading>
-
-          {/* <Button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </Button> */}
+          <Stack spacing={[1, 5]} direction={["column", "row"]}>
+            <Checkbox
+              isChecked={shownColumns.initial}
+              onChange={() => handleCheckboxChange("initial")}
+            >
+              To convert
+            </Checkbox>
+            <Checkbox
+              isChecked={shownColumns.final}
+              onChange={() => handleCheckboxChange("final")}
+            >
+              into
+            </Checkbox>
+            <Checkbox
+              isChecked={shownColumns.multiplier}
+              onChange={() => handleCheckboxChange("multiplier")}
+            >
+              multiply by
+            </Checkbox>
+          </Stack>
           <DataTable
             data={MOCK_DATA}
             columns={COLUMNS}
+            columnFilters={columnFilters}
             parentHeader={PARENT_HEADER}
           />
         </VStack>
