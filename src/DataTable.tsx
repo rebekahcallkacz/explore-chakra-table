@@ -13,13 +13,19 @@ export type TColumn<T, K extends keyof T> = {
   label: string;
   isNumeric?: boolean;
 };
+export type TParentHeaderColumn = {
+  label: string;
+  columnChildren: Array<string>;
+};
 type TDataTableProps<T, K extends keyof T> = {
   data: Array<T>;
   columns: Array<TColumn<T, K>>;
+  parentHeader?: Array<TParentHeaderColumn>;
 };
 const DataTable = <T, K extends keyof T>({
   data,
   columns,
+  parentHeader,
 }: TDataTableProps<T, K>) => {
   console.log(data);
   console.log(columns);
@@ -27,10 +33,15 @@ const DataTable = <T, K extends keyof T>({
     <TableContainer width="sm">
       <Table size="sm">
         <Thead>
-          {/* <Tr>
-            <Th colSpan={2}>Measurements</Th>
-            <Th isNumeric>Values</Th>
-          </Tr> */}
+          {parentHeader && (
+            <Tr>
+              {parentHeader.map((column) => (
+                <Th key={column.label} colSpan={column.columnChildren.length}>
+                  {column.label}
+                </Th>
+              ))}
+            </Tr>
+          )}
           <Tr>
             {columns.map((column: TColumn<T, K>) => (
               <Th key={String(column.value)} isNumeric={column.isNumeric}>
