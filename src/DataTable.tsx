@@ -8,37 +8,46 @@ import {
   TableContainer,
 } from "@chakra-ui/react";
 
-const DataTable = () => {
+export type TColumn<T, K extends keyof T> = {
+  value: K | string;
+  label: string;
+  isNumeric?: boolean;
+};
+type TDataTableProps<T, K extends keyof T> = {
+  data: Array<T>;
+  columns: Array<TColumn<T, K>>;
+};
+const DataTable = <T, K extends keyof T>({
+  data,
+  columns,
+}: TDataTableProps<T, K>) => {
+  console.log(data);
+  console.log(columns);
   return (
     <TableContainer width="sm">
       <Table size="sm">
         <Thead>
-          <Tr>
+          {/* <Tr>
             <Th colSpan={2}>Measurements</Th>
             <Th isNumeric>Values</Th>
-          </Tr>
+          </Tr> */}
           <Tr>
-            <Th>To convert</Th>
-            <Th>into</Th>
-            <Th isNumeric>multiply by</Th>
+            {columns.map((column: TColumn<T, K>) => (
+              <Th key={String(column.value)} isNumeric={column.isNumeric}>
+                {column.label}
+              </Th>
+            ))}
           </Tr>
         </Thead>
         <Tbody>
-          <Tr>
-            <Td>inches</Td>
-            <Td>millimetres (mm)</Td>
-            <Td isNumeric>25.4</Td>
-          </Tr>
-          <Tr>
-            <Td>feet</Td>
-            <Td>centimetres (cm)</Td>
-            <Td isNumeric>30.48</Td>
-          </Tr>
-          <Tr>
-            <Td>yards</Td>
-            <Td>metres (m)</Td>
-            <Td isNumeric>0.91444</Td>
-          </Tr>
+          {data.map((datum: T) => (
+            <Tr>
+              {columns.map((column: TColumn<T, K>) => {
+                const rowValue = datum[column.value as K] as string | number;
+                return <Td isNumeric={column.isNumeric}>{rowValue}</Td>;
+              })}
+            </Tr>
+          ))}
         </Tbody>
       </Table>
     </TableContainer>
