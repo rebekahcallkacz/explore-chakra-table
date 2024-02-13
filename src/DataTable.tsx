@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import {
   Table,
   Thead,
@@ -28,71 +27,35 @@ type TDataTableProps<T, K extends keyof T> = {
 const DataTable = <T, K extends keyof T>({
   data,
   columns,
-  columnFilters,
-  parentHeader,
 }: TDataTableProps<T, K>) => {
-  const filteredColumns = useMemo(() => {
-    return columns.filter((column) =>
-      columnFilters ? columnFilters.includes(column.value as K) : true
-    );
-  }, [columns, columnFilters]);
-
-  const filteredParentHeader = useMemo(() => {
-    if (!parentHeader) return parentHeader;
-    const filteredParentHeader: Array<TParentHeaderColumn> = [];
-    parentHeader.forEach((column) => {
-      const filteredColumnChildren = column.columnChildren.filter(
-        (columnValue) => columnFilters?.includes(columnValue)
-      );
-      if (filteredColumnChildren.length) {
-        filteredParentHeader.push({
-          label: column.label,
-          columnChildren: filteredColumnChildren,
-          isNumeric: column.isNumeric,
-        });
-      }
-    });
-    return filteredParentHeader;
-  }, [parentHeader, columnFilters]);
-
+  console.log(data);
+  console.log(columns);
   return (
     <TableContainer width="sm">
       <Table size="sm">
         <Thead>
-          {filteredParentHeader && (
-            <Tr>
-              {filteredParentHeader.map((column) => (
-                <Th
-                  key={column.label}
-                  colSpan={column.columnChildren.length}
-                  isNumeric={column.isNumeric}
-                >
-                  {column.label}
-                </Th>
-              ))}
-            </Tr>
-          )}
           <Tr>
-            {filteredColumns.map((column: TColumn<T, K>) => (
-              <Th key={String(column.value)} isNumeric={column.isNumeric}>
-                {column.label}
-              </Th>
-            ))}
+            <Th>To convert</Th>
+            <Th>into</Th>
+            <Th isNumeric>multiply by</Th>
           </Tr>
         </Thead>
         <Tbody>
-          {data.map((datum: T) => (
-            <Tr key={Math.random()}>
-              {filteredColumns.map((column: TColumn<T, K>) => {
-                const rowValue = datum[column.value as K] as string | number;
-                return (
-                  <Td key={rowValue} isNumeric={column.isNumeric}>
-                    {rowValue}
-                  </Td>
-                );
-              })}
-            </Tr>
-          ))}
+          <Tr>
+            <Td>inches</Td>
+            <Td>millimetres (mm)</Td>
+            <Td isNumeric>25.4</Td>
+          </Tr>
+          <Tr>
+            <Td>feet</Td>
+            <Td>centimetres (cm)</Td>
+            <Td isNumeric>30.48</Td>
+          </Tr>
+          <Tr>
+            <Td>yards</Td>
+            <Td>metres (m)</Td>
+            <Td isNumeric>0.91444</Td>
+          </Tr>
         </Tbody>
       </Table>
     </TableContainer>
