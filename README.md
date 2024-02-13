@@ -18,4 +18,4 @@
 
 ## Code the Dream Mentor Session
 
-- Code written in my CTD mentor session on 2/13 is in the branch demo/shared-table-component
+- Code written in my CTD mentor session on 2/13 is in the branch `demo/shared-table-component`
